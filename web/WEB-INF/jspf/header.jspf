@@ -35,7 +35,7 @@
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="addAuthor">Добавить автора</a></li>
-                    <li><a class="dropdown-item" href="#">Список авторов</a></li>
+                    <li><a class="dropdown-item" href="listAuthors">Список авторов</a></li>
                   </ul>
                 </li>
               </ul>

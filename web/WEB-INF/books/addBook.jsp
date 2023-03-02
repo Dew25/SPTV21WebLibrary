@@ -8,7 +8,7 @@
                     <div class="mb-3 row">
                         <label for="inputName" class="col-sm-4 col-form-label">Название книги</label>
                         <div class="col-sm-8">
-                          <input type="text" class="form-control" id="inputName" name="bookName">
+                            <input type="text" class="form-control" id="inputName" name="bookName" value="${bookName}">
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -24,13 +24,13 @@
                     <div class="mb-3 row">
                         <label for="inputYear" class="col-sm-4 col-form-label">Год издания</label>
                         <div class="col-sm-8">
-                          <input type="text" class="form-control w-50" id="inputYear" name="publishedYear">
+                            <input type="text" class="form-control w-50" id="inputYear" name="publishedYear" value="${publishedYear}">
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label for="inputQuantity" class="col-sm-4 col-form-label">Количество экземпляров</label>
                         <div class="col-sm-8">
-                          <input type="text" class="form-control w-25" id="inputQuantity" name="quantity">
+                            <input type="text" class="form-control w-25" id="inputQuantity" name="quantity" value="${quantity}">
                         </div>
                     </div>
                     <div class="row">

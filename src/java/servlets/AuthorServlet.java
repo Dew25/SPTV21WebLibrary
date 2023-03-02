@@ -23,6 +23,8 @@ import session.AuthorFacade;
 @WebServlet(name = "AuthorServlet", urlPatterns = {
     "/addAuthor",
     "/createAuthor",
+    "/listAuthors",
+    
 
 })
 public class AuthorServlet extends HttpServlet {
@@ -59,7 +61,10 @@ public class AuthorServlet extends HttpServlet {
                 request.setAttribute("info","Автор успешно добавлен");
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
-            
+            case "/listAuthors":
+                request.setAttribute("listAuthors", authorFacade.findAll());
+                request.getRequestDispatcher("/WEB-INF/authors/listAuthors.jsp").forward(request, response);
+                break;
         }
     }
 

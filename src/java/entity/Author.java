@@ -3,10 +3,12 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Author implements Serializable{
@@ -15,6 +17,9 @@ public class Author implements Serializable{
     private String firstname;
     private String lastname;
     private int birthYear;
+    @OneToMany
+    private List<Book> books;
+    
 
     public Author() {
     }
@@ -56,6 +61,14 @@ public class Author implements Serializable{
                 + ", lastname=" + lastname 
                 + ", birthYear=" + birthYear 
                 + '}';
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
     }
 
 
