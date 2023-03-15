@@ -24,8 +24,8 @@
                   <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="addBook">Добавить книгу</a></li>
                     <li><a class="dropdown-item" href="listBooks">Список книг</a></li>
-                    <li><a class="dropdown-item" href="#">Выдать книгу</a></li>
-                    <li><a class="dropdown-item" href="#">Вернуть книгу</a></li>
+                    <li><a class="dropdown-item" href="takeOnBook">Выдать книгу</a></li>
+                    <li><a class="dropdown-item" href="returnBook">Вернуть книгу</a></li>
                    
                   </ul>
                 </li>

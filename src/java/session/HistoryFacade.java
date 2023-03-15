@@ -3,6 +3,8 @@
 package session;
 
 import entity.History;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,6 +23,15 @@ public class HistoryFacade extends AbstractFacade<History> {
 
     public HistoryFacade() {
         super(History.class);
+    }
+
+    public List<History> getHistoriesWithTakedBooks() {
+        try {
+            return em.createQuery("SELECT h FROM History h WHERE h.returnBook = null")
+                    .getResultList();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
 
 }
