@@ -7,6 +7,7 @@ package servlets;
 
 import entity.Author;
 import entity.Book;
+import entity.Cover;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import session.AuthorFacade;
 import session.BookFacade;
+import session.CoverFacade;
 
 /**
  *
@@ -34,6 +36,7 @@ import session.BookFacade;
 public class BookServlet extends HttpServlet {
     @EJB AuthorFacade authorFacade;
     @EJB BookFacade bookFacade;
+    @EJB CoverFacade coverFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -51,6 +54,7 @@ public class BookServlet extends HttpServlet {
         switch (path) {
             case "/addBook":
                 request.setAttribute("listAuthors", authorFacade.findAll());
+                request.setAttribute("listCovers", coverFacade.findAll());
                 request.getRequestDispatcher("/WEB-INF/books/addBook.jsp").forward(request, response);
                 break;
             case "/createBook":
@@ -58,6 +62,7 @@ public class BookServlet extends HttpServlet {
                 String[] authors = request.getParameterValues("authors");
                 String publishedYear = request.getParameter("publishedYear");
                 String quantity = request.getParameter("quantity");
+                String coverId = request.getParameter("coverId");
                 if(bookName.isEmpty() || publishedYear.isEmpty() || quantity.isEmpty()){
                     request.setAttribute("bookName", bookName);
                     request.setAttribute("publishedYear", publishedYear);
@@ -74,6 +79,14 @@ public class BookServlet extends HttpServlet {
                     request.getRequestDispatcher("/addBook").forward(request, response);
                     break;
                 }
+                if(coverId == null){
+                    request.setAttribute("bookName", bookName);
+                    request.setAttribute("publishedYear", publishedYear);
+                    request.setAttribute("quantity", quantity);
+                    request.setAttribute("info", "Вы не выбрали обложку для книги");
+                    request.getRequestDispatcher("/addBook").forward(request, response);
+                    break;
+                }
                 List<Author> listAuthors = new ArrayList<>();
                 for (int i = 0; i < authors.length; i++) {
                    listAuthors.add(authorFacade.find(Long.parseLong(authors[i])));
@@ -83,6 +96,8 @@ public class BookServlet extends HttpServlet {
                 book.setBookName(bookName);
                 book.setPublishedYear(Integer.parseInt(publishedYear));
                 book.setQuantity(Integer.parseInt(quantity));
+                Cover cover = coverFacade.find(Long.parseLong(coverId));
+                book.setCover(cover);
                 bookFacade.create(book);
                 for (int i = 0; i < listAuthors.size(); i++) {
                     Author author = listAuthors.get(i);

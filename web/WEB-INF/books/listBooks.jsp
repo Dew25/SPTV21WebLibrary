@@ -6,10 +6,11 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-       <h1 class="w-100 d-flex justify-content-center mt-5">Список книг</h1>
+       <h3 class="w-100 d-flex justify-content-center mt-5">Список книг</h3>
        <div class="w-100 p-3 d-flex justify-content-center">
            <c:forEach var="book" items="${listBooks}">
             <div class="card m-2" style="width: 13rem;">
+                <img src="insertFile/${book.cover.url}" width="200" height="290"/> 
                 <div class="card-body">
                     <h5 class="card-title">${book.bookName}</h5>
                     <p class="card-text">Авторы: 

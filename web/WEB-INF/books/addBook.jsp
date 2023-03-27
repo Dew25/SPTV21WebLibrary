@@ -1,10 +1,13 @@
 
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-        <h1 class="w-100 d-flex justify-content-center mt-5">Добавить книгу</h1>
+        <h3 class="w-100 d-flex justify-content-center mt-5">Добавить книгу</h3>
         <div class="w-100 p-3 d-flex justify-content-center">
             <form action="createBook" method="POST">
                 <div class="card border-0 m-2" style="width: 30rem;">
+                    <div class="mb-3 row ">
+                        <a class="w-100 d-flex justify-content-center" href="addCover">Загрузить обложку для книги</a>
+                    </div>
                     <div class="mb-3 row">
                         <label for="inputName" class="col-sm-4 col-form-label">Название книги</label>
                         <div class="col-sm-8">
@@ -31,6 +34,16 @@
                         <label for="inputQuantity" class="col-sm-4 col-form-label">Количество экземпляров</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control w-25" id="inputQuantity" name="quantity" value="${quantity}">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="selectCover" class="col-sm-4 col-form-label">Обложки</label>
+                        <div class="col-sm-8">
+                            <select class="form-select" name="coverId" rows="5" cols="20" id="selectCover">
+                                <c:forEach var="cover" items="${listCovers}">
+                                    <option value="${cover.id}">${cover.description}</option>
+                                </c:forEach>
+                            </select>
                         </div>
                     </div>
                     <div class="row">
