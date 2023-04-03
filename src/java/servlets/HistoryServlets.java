@@ -10,6 +10,7 @@ import entity.Book;
 import entity.History;
 import entity.Reader;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.GregorianCalendar;
 import java.util.List;
 import javax.ejb.EJB;
@@ -32,6 +33,9 @@ import session.ReaderFacade;
     "/returnBook",
     "/updateHistory",
     "/listHistories",
+    "/showStat",
+    "/calcStat",
+    
 })
 public class HistoryServlets extends HttpServlet {
     
@@ -111,6 +115,15 @@ public class HistoryServlets extends HttpServlet {
             case "/listHistories":
                 request.setAttribute("listReaders", readerFacade.findAll());
                 request.getRequestDispatcher("/WEB-INF/readers/listReaders.jsp").forward(request, response);
+                break;
+            case "/showStat":
+                LocalDateTime localDateTime = LocalDateTime.now();
+                //request.setAttribute("listYars", listYears);
+                request.getRequestDispatcher("/WEB-INF/history/showStat.jsp").forward(request, response);
+                break;
+            case "/calcStat":
+                request.setAttribute("listReaders", readerFacade.findAll());
+                request.getRequestDispatcher("/WEB-INF/history/calcStat.jsp").forward(request, response);
                 break;
         }
     }
