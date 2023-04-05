@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -95,6 +96,51 @@ public class Book implements Serializable{
 
     public void setCover(Cover cover) {
         this.cover = cover;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + Objects.hashCode(this.id);
+        hash = 97 * hash + Objects.hashCode(this.bookName);
+        hash = 97 * hash + Objects.hashCode(this.authors);
+        hash = 97 * hash + this.publishedYear;
+        hash = 97 * hash + this.quantity;
+        hash = 97 * hash + Objects.hashCode(this.cover);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Book other = (Book) obj;
+        if (this.publishedYear != other.publishedYear) {
+            return false;
+        }
+        if (this.quantity != other.quantity) {
+            return false;
+        }
+        if (!Objects.equals(this.bookName, other.bookName)) {
+            return false;
+        }
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.authors, other.authors)) {
+            return false;
+        }
+        if (!Objects.equals(this.cover, other.cover)) {
+            return false;
+        }
+        return true;
     }
 
     

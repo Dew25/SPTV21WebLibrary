@@ -12,7 +12,9 @@ import entity.Reader;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -118,12 +120,40 @@ public class HistoryServlets extends HttpServlet {
                 break;
             case "/showStat":
                 LocalDateTime localDateTime = LocalDateTime.now();
-                //request.setAttribute("listYars", listYears);
+                int year = localDateTime.getYear();
+                request.setAttribute("year", year);
                 request.getRequestDispatcher("/WEB-INF/history/showStat.jsp").forward(request, response);
                 break;
             case "/calcStat":
-                request.setAttribute("listReaders", readerFacade.findAll());
-                request.getRequestDispatcher("/WEB-INF/history/calcStat.jsp").forward(request, response);
+                String selectDay = request.getParameter("selectDay");
+                String selectMonth = request.getParameter("selectMonth");
+                String selectYear = request.getParameter("selectYear");
+                Map<Book,Integer> mapStat = new HashMap<>();
+                List<History> listHistoryStat = historyFacade.getListHistory(selectYear,selectMonth,selectDay);
+                listBooks = bookFacade.findAll();
+                for (int i = 0; i < listBooks.size(); i++) {
+                    Book b = listBooks.get(i);
+                    int n = 0;
+                    for (int j = 0; j < listHistoryStat.size(); j++) {
+                        Book readerBook = listHistoryStat.get(j).getBook();
+                        if(readerBook.equals(b)){
+                            if(mapStat.get(b) != null) n = mapStat.get(b); 
+                            mapStat.put(b,n+1);
+                        }
+                    }
+                }
+                request.setAttribute("mapStat", mapStat);
+                request.setAttribute("selectDay", selectDay);
+                request.setAttribute("selectMonth", selectMonth);
+                request.setAttribute("selectYear", selectYear);
+                if(selectDay.isEmpty() && selectMonth.isEmpty() && !selectYear.isEmpty()){
+                        request.setAttribute("period", "За год");
+                }else if(selectDay.isEmpty() && !selectMonth.isEmpty() && !selectYear.isEmpty()){
+                    request.setAttribute("period", "За месяц");
+                }else if(!selectDay.isEmpty() && !selectMonth.isEmpty() && !selectYear.isEmpty()){
+                    request.setAttribute("period", "За день");
+                }
+                request.getRequestDispatcher("/showStat").forward(request, response);
                 break;
         }
     }
