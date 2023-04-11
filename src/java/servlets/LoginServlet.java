@@ -6,21 +6,20 @@
  */
 package servlets;
 
-import entity.Book;
+import entity.Author;
 import entity.Reader;
 import entity.secure.User;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import session.HistoryFacade;
+import javax.servlet.http.HttpSession;
+import session.AuthorFacade;
 import session.ReaderFacade;
 import session.UserFacade;
 
@@ -28,19 +27,38 @@ import session.UserFacade;
  *
  * @author user
  */
-@WebServlet(name = "ReaderServlet", urlPatterns = {
-    "/addReader",
-    "/createReader",
-    "/listReaders",
-    
-
+@WebServlet(name = "LoginServlet", loadOnStartup = 1, urlPatterns = {
+    "/showLogin",
+    "/registration",
+    "/logout",
 })
-public class ReaderServlets extends HttpServlet {
+public class LoginServlet extends HttpServlet {
     
     @EJB private ReaderFacade readerFacade;
-    @EJB private HistoryFacade historyFacade;
     @EJB private UserFacade userFacade;
-    static enum Role {USER,MANAGER,ADMINISTRATOR};
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        if(userFacade.count()>0) return;
+        Reader reader = new Reader();
+                reader.setPhone("56565656");
+                reader.setFirstname("Juri");
+                reader.setLastname("Melnikov");
+                readerFacade.create(reader);
+                User user = new User();
+                user.setLogin("Administrator");
+                user.setPassword("12345");
+                user.setReader(reader);
+                List<String> roles = new ArrayList<>();
+                roles.add(ReaderServlets.Role.USER.toString());
+                roles.add(ReaderServlets.Role.MANAGER.toString());
+                roles.add(ReaderServlets.Role.ADMINISTRATOR.toString());
+                user.setRoles(roles);
+                userFacade.create(user);
+    }
+    
+    
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -57,40 +75,35 @@ public class ReaderServlets extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String path = request.getServletPath();
         switch (path) {
-            case "/addReader":
-                request.getRequestDispatcher("/WEB-INF/readers/addReader.jsp").forward(request, response);
+            case "/showLogin":
+                request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
                 break;
-            case "/createReader":
-                String firstname = request.getParameter("firstname");
-                String lastname = request.getParameter("lastname");
-                String phone = request.getParameter("phone");
+            case "/registration":
                 String login = request.getParameter("login");
                 String password = request.getParameter("password");
-                Reader reader = new Reader();
-                reader.setPhone(phone);
-                reader.setFirstname(firstname);
-                reader.setLastname(lastname);
-                readerFacade.create(reader);
-                User user = new User();
-                user.setLogin(login);
-                user.setPassword(password);
-                user.setReader(reader);
-                List<String> roles = new ArrayList<>();
-                roles.add(Role.USER.toString());
-                user.setRoles(roles);
-                userFacade.create(user);
-                request.setAttribute("info","Читатель успешно добавлен");
+                User user = userFacade.findByLogin(login);
+                if( user == null){
+                    request.setAttribute("info", "Нет такого пользователя или неправильный пароль");
+                    request.getRequestDispatcher("/showLogin").forward(request, response);
+                    break;
+                }
+                if(!user.getPassword().equals(password)){
+                    request.setAttribute("info", "Нет такого пользователя или неправильный пароль");
+                    request.getRequestDispatcher("/showLogin").forward(request, response);
+                    break;
+                }
+                HttpSession session = request.getSession(true);
+                session.setAttribute("user", user);
+                request.setAttribute("info", "Вы авторизованы как: "+user.getLogin());
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
-            case "/listReaders":
-                Map<Reader, List<Book>> mapReaders = new HashMap();
-                List<Reader> listReaders = readerFacade.findAll();
-                for (int i = 0; i < listReaders.size(); i++) {
-                    Reader r = listReaders.get(i);
-                    mapReaders.put(r, historyFacade.getReadingBook(r)); 
+            case "/logout":  
+                HttpSession sessionClose = request.getSession(false);
+                if(sessionClose != null){
+                    sessionClose.invalidate();
                 }
-                request.setAttribute("mapReaders", mapReaders);
-                request.getRequestDispatcher("/WEB-INF/readers/listReaders.jsp").forward(request, response);
+                request.setAttribute("info", "Вы вышли");
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
         }
     }

@@ -58,6 +58,10 @@
                   </ul>
                 </li>
               </ul>
+              <ul class="navbar-nav me-end mb-2 mb-lg-0">
+                    <li><a href="showLogin">Войти</a></li>
+                    <li><a href="logout">Выйти</a></li>
+              </ul>  
             </div>
           </div>
         </nav>

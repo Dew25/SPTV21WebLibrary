@@ -8,6 +8,7 @@ package servlets;
 import entity.Author;
 import entity.Book;
 import entity.Cover;
+import entity.secure.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import session.AuthorFacade;
 import session.BookFacade;
 import session.CoverFacade;
@@ -50,9 +52,27 @@ public class BookServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        HttpSession session = request.getSession(false);
+        if(session == null){
+            request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+            return;
+        }
+        User authUser = (User) session.getAttribute("user");
+        if(authUser == null){
+            request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+            return;
+        }
+        
         String path = request.getServletPath();
         switch (path) {
             case "/addBook":
+                if(!authUser.getRoles().contains("MANAGER")){
+                    request.setAttribute("info", "У вас нет прав, Вы не менеджер!");
+                    request.getRequestDispatcher("/showLogin").forward(request, response);
+                    break;
+                }
                 request.setAttribute("listAuthors", authorFacade.findAll());
                 request.setAttribute("listCovers", coverFacade.findAll());
                 request.getRequestDispatcher("/WEB-INF/books/addBook.jsp").forward(request, response);

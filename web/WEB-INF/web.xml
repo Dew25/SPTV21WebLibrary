@@ -9,6 +9,7 @@
         <jsp-property-group>
             <display-name>template1</display-name>
             <url-pattern>/index.jsp</url-pattern>
+            <url-pattern>/showLogin.jsp</url-pattern>
             <url-pattern>/WEB-INF/authors/*</url-pattern>
             <url-pattern>/WEB-INF/books/*</url-pattern>
             <url-pattern>/WEB-INF/readers/*</url-pattern>
