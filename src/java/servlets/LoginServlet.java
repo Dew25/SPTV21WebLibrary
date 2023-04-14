@@ -6,7 +6,6 @@
  */
 package servlets;
 
-import entity.Author;
 import entity.Reader;
 import entity.secure.User;
 import java.io.IOException;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import session.AuthorFacade;
 import session.ReaderFacade;
 import session.UserFacade;
 import tools.PasswordEncrypt;
@@ -98,6 +96,7 @@ public class LoginServlet extends HttpServlet {
                 }
                 HttpSession session = request.getSession(true);
                 session.setAttribute("user", user);
+                request.setAttribute("authUser", user);
                 request.setAttribute("info", "Вы авторизованы как: "+user.getLogin());
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;

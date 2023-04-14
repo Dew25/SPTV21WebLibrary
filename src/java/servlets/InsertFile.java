@@ -5,6 +5,7 @@
  */
 package servlets;
 
+import entity.secure.User;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -17,6 +18,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import static org.apache.jasper.Constants.DEFAULT_BUFFER_SIZE;
 
 /**
@@ -41,6 +43,19 @@ public class InsertFile extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        HttpSession session = request.getSession(false);
+        if(session == null){
+            request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+            return;
+        }
+        User authUser = (User) session.getAttribute("user");
+        if(authUser == null){
+            request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+            return;
+        }
+        request.setAttribute("authUser", authUser);
         String filePath = request.getPathInfo();
         if(null == filePath){
             response.sendError((HttpServletResponse.SC_NOT_FOUND));

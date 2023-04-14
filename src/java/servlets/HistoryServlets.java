@@ -9,6 +9,7 @@ package servlets;
 import entity.Book;
 import entity.History;
 import entity.Reader;
+import entity.secure.User;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.GregorianCalendar;
@@ -21,6 +22,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import session.BookFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
@@ -58,6 +60,19 @@ public class HistoryServlets extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        HttpSession session = request.getSession(false);
+        if(session == null){
+            request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+            return;
+        }
+        User authUser = (User) session.getAttribute("user");
+        if(authUser == null){
+            request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
+            request.getRequestDispatcher("/showLogin").forward(request, response);
+            return;
+        }
+        request.setAttribute("authUser", authUser);
         String path = request.getServletPath();
         switch (path) {
             case "/takeOnBook":

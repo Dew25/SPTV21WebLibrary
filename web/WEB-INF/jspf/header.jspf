@@ -10,6 +10,16 @@
         <title>SPTV21WebLibrary</title>
     </head>
     <body>
+        <c:set var="user" value="false"></c:set>
+        <c:set var="manager" value="false"></c:set>
+        <c:set var="admininstrator" value="false"></c:set>
+        <c:if test="${authUser ne null}">
+          <c:forEach var="role" items="${authUser.roles}">
+              <c:if  test="${role eq 'USER'}"><c:set var="user" value="true"></c:set></c:if>
+              <c:if  test="${role eq 'MANAGER'}"><c:set var="manager" value="true"></c:set></c:if>
+              <c:if  test="${role eq 'ADMINISTRATOR'}"><c:set var="admininstrator" value="true"></c:set></c:if>
+          </c:forEach>
+        </c:if>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
           <div class="container-fluid">
             <a class="navbar-brand" href="#">SPTV21WebLibrary</a>
@@ -23,44 +33,61 @@
                     Книги
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="addBook">Добавить книгу</a></li>
+                      <c:if test="${manager}">
+                        <li><a class="dropdown-item" href="addBook">Добавить книгу</a></li>
+                      </c:if>
                     <li><a class="dropdown-item" href="listBooks">Список книг</a></li>
-                    <li><a class="dropdown-item" href="takeOnBook">Выдать книгу</a></li>
-                    <li><a class="dropdown-item" href="returnBook">Вернуть книгу</a></li>
-                   
+                    <c:if test="${user}">
+                        <li><a class="dropdown-item" href="takeOnBook">Выдать книгу</a></li>
+                        <li><a class="dropdown-item" href="returnBook">Вернуть книгу</a></li>
+                    </c:if>
                   </ul>
                 </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Авторы
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="addAuthor">Добавить автора</a></li>
-                    <li><a class="dropdown-item" href="listAuthors">Список авторов</a></li>
-                  </ul>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Читатели
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="addReader">Добавить читателя</a></li>
-                    <li><a class="dropdown-item" href="listReaders">Список читателей</a></li>
-                  </ul>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Администрирование
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="showStat">Статискика читаемых книг</a></li>
-                    
-                  </ul>
-                </li>
+                <c:if test="${user}">
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Авторы
+                      </a>
+                      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <c:if test="${manager}">
+                            <li><a class="dropdown-item" href="addAuthor">Добавить автора</a></li>
+                        </c:if>
+                        <li><a class="dropdown-item" href="listAuthors">Список авторов</a></li>
+                      </ul>
+                    </li>
+                </c:if>
+                <c:if test="${user}">
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Читатели
+                      </a>
+                      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="addReader">Добавить читателя</a></li>
+                        <c:if test="${manager}">
+                            <li><a class="dropdown-item" href="listReaders">Список читателей</a></li>
+                        </c:if>
+                      </ul>
+                    </li>
+                </c:if>
+                <c:if test="${admininstrator}">    
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Администрирование
+                      </a>
+                      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="showStat">Статискика читаемых книг</a></li>
+
+                      </ul>
+                    </li>
+                </c:if>
               </ul>
               <ul class="navbar-nav me-end mb-2 mb-lg-0">
+              <c:if test="${!user}">
                     <li><a href="showLogin">Войти</a></li>
+              </c:if>
+              <c:if test="${user}">
                     <li><a href="logout">Выйти</a></li>
+              </c:if>
               </ul>  
             </div>
           </div>
