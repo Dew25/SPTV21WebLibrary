@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import session.HistoryFacade;
 import session.ReaderFacade;
 import session.UserFacade;
+import tools.PasswordEncrypt;
 
 /**
  *
@@ -73,6 +74,9 @@ public class ReaderServlets extends HttpServlet {
                 readerFacade.create(reader);
                 User user = new User();
                 user.setLogin(login);
+                PasswordEncrypt pe = new PasswordEncrypt();
+                user.setSalt(pe.getSalt());
+                password = pe.getProtectedPassword(password, user.getSalt());
                 user.setPassword(password);
                 user.setReader(reader);
                 List<String> roles = new ArrayList<>();

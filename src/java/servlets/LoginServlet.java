@@ -22,6 +22,7 @@ import javax.servlet.http.HttpSession;
 import session.AuthorFacade;
 import session.ReaderFacade;
 import session.UserFacade;
+import tools.PasswordEncrypt;
 
 /**
  *
@@ -29,13 +30,14 @@ import session.UserFacade;
  */
 @WebServlet(name = "LoginServlet", loadOnStartup = 1, urlPatterns = {
     "/showLogin",
-    "/registration",
+    "/login",
     "/logout",
 })
 public class LoginServlet extends HttpServlet {
     
     @EJB private ReaderFacade readerFacade;
     @EJB private UserFacade userFacade;
+    private PasswordEncrypt pe = new PasswordEncrypt();
 
     @Override
     public void init() throws ServletException {
@@ -48,7 +50,8 @@ public class LoginServlet extends HttpServlet {
                 readerFacade.create(reader);
                 User user = new User();
                 user.setLogin("Administrator");
-                user.setPassword("12345");
+                user.setSalt(pe.getSalt());
+                user.setPassword(pe.getProtectedPassword("12345",user.getSalt()));
                 user.setReader(reader);
                 List<String> roles = new ArrayList<>();
                 roles.add(ReaderServlets.Role.USER.toString());
@@ -78,7 +81,7 @@ public class LoginServlet extends HttpServlet {
             case "/showLogin":
                 request.getRequestDispatcher("/showLogin.jsp").forward(request, response);
                 break;
-            case "/registration":
+            case "/login":
                 String login = request.getParameter("login");
                 String password = request.getParameter("password");
                 User user = userFacade.findByLogin(login);
@@ -87,6 +90,7 @@ public class LoginServlet extends HttpServlet {
                     request.getRequestDispatcher("/showLogin").forward(request, response);
                     break;
                 }
+                password = pe.getProtectedPassword(password, user.getSalt());
                 if(!user.getPassword().equals(password)){
                     request.setAttribute("info", "Нет такого пользователя или неправильный пароль");
                     request.getRequestDispatcher("/showLogin").forward(request, response);
