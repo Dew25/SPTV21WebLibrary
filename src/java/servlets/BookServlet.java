@@ -31,7 +31,6 @@ import session.CoverFacade;
 @WebServlet(name = "BookServlet", urlPatterns = {
     "/addBook",
     "/createBook",
-    "/listBooks",
     "/book",
     
 })
@@ -64,7 +63,6 @@ public class BookServlet extends HttpServlet {
             request.getRequestDispatcher("/showLogin").forward(request, response);
             return;
         }
-        request.setAttribute("authUser", authUser);
         String path = request.getServletPath();
         switch (path) {
             case "/addBook":
@@ -127,10 +125,7 @@ public class BookServlet extends HttpServlet {
                 request.setAttribute("info", "Книга добавлена успешно");
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
-            case "/listBooks":
-                request.setAttribute("listBooks", bookFacade.findAll());
-                request.getRequestDispatcher("/WEB-INF/books/listBooks.jsp").forward(request, response);
-                break;
+            
             case "/book":
                 String id = request.getParameter("id");
                 request.setAttribute("book", bookFacade.find(Long.parseLong(id)));

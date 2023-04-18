@@ -25,7 +25,7 @@ import session.AuthorFacade;
 @WebServlet(name = "AuthorServlet", urlPatterns = {
     "/addAuthor",
     "/createAuthor",
-    "/listAuthors",
+
     
 
 })
@@ -53,12 +53,11 @@ public class AuthorServlet extends HttpServlet {
             return;
         }
         User authUser = (User) session.getAttribute("user");
-        if(authUser == null){
+        if(authUser == null || !authUser.getRoles().contains(ReaderServlets.Role.MANAGER.toString())){
             request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
             return;
         }
-        request.setAttribute("authUser", authUser);
         String path = request.getServletPath();
         switch (path) {
             case "/addAuthor":
@@ -76,10 +75,7 @@ public class AuthorServlet extends HttpServlet {
                 request.setAttribute("info","Автор успешно добавлен");
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
-            case "/listAuthors":
-                request.setAttribute("listAuthors", authorFacade.findAll());
-                request.getRequestDispatcher("/WEB-INF/authors/listAuthors.jsp").forward(request, response);
-                break;
+            
         }
     }
 

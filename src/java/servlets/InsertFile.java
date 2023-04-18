@@ -43,19 +43,6 @@ public class InsertFile extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession(false);
-        if(session == null){
-            request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
-            request.getRequestDispatcher("/showLogin").forward(request, response);
-            return;
-        }
-        User authUser = (User) session.getAttribute("user");
-        if(authUser == null){
-            request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
-            request.getRequestDispatcher("/showLogin").forward(request, response);
-            return;
-        }
-        request.setAttribute("authUser", authUser);
         String filePath = request.getPathInfo();
         if(null == filePath){
             response.sendError((HttpServletResponse.SC_NOT_FOUND));

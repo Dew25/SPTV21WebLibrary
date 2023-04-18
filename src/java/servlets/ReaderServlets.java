@@ -31,10 +31,7 @@ import tools.PasswordEncrypt;
  * @author user
  */
 @WebServlet(name = "ReaderServlet", urlPatterns = {
-    "/addReader",
-    "/createReader",
     "/listReaders",
-    
 
 })
 public class ReaderServlets extends HttpServlet {
@@ -65,42 +62,15 @@ public class ReaderServlets extends HttpServlet {
             return;
         }
         User authUser = (User) session.getAttribute("user");
-        if(authUser == null){
+        if(authUser == null || !authUser.getRoles().contains(ReaderServlets.Role.MANAGER.toString())){
             request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
             return;
         }
-        request.setAttribute("authUser", authUser);
+        
         String path = request.getServletPath();
         switch (path) {
-            case "/addReader":
-                request.getRequestDispatcher("/WEB-INF/readers/addReader.jsp").forward(request, response);
-                break;
-            case "/createReader":
-                String firstname = request.getParameter("firstname");
-                String lastname = request.getParameter("lastname");
-                String phone = request.getParameter("phone");
-                String login = request.getParameter("login");
-                String password = request.getParameter("password");
-                Reader reader = new Reader();
-                reader.setPhone(phone);
-                reader.setFirstname(firstname);
-                reader.setLastname(lastname);
-                readerFacade.create(reader);
-                User user = new User();
-                user.setLogin(login);
-                PasswordEncrypt pe = new PasswordEncrypt();
-                user.setSalt(pe.getSalt());
-                password = pe.getProtectedPassword(password, user.getSalt());
-                user.setPassword(password);
-                user.setReader(reader);
-                List<String> roles = new ArrayList<>();
-                roles.add(Role.USER.toString());
-                user.setRoles(roles);
-                userFacade.create(user);
-                request.setAttribute("info","Читатель успешно добавлен");
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
-                break;
+            
             case "/listReaders":
                 Map<Reader, List<Book>> mapReaders = new HashMap();
                 List<Reader> listReaders = readerFacade.findAll();

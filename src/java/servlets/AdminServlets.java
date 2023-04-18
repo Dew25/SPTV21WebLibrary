@@ -65,7 +65,8 @@ public class AdminServlets extends HttpServlet {
             return;
         }
         User authUser = (User) session.getAttribute("user");
-        if(authUser == null){
+        if(authUser == null || !authUser.getRoles().contains(ReaderServlets.Role.ADMINISTRATOR.toString())){
+            //если вошедшего пользователя нет, или он есть, но не имеет роли ADMINISTRATOR
             request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
             return;

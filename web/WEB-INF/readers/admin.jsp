@@ -8,11 +8,12 @@
 <h3 class="w-100 d-flex justify-content-center mt-5">Администрирование</h3>
         <div class="w-100 p-3 d-flex justify-content-center">
             <form action="changeRole" method="POST">
-                <div class="card border-0 m-2" style="width: 30rem;">
+                <div class="card border-0 m-2" style="width: 51rem;">
                     <div class="mb-3 row">
-                        <label for="inputName" class="col-sm-3 col-form-label">Имя</label>
-                        <div class="col-sm-9">
-                            <select name="userId" class="form-select">
+                        <label for="user_id" class="col-sm-4 col-form-label text-end">Список пользователей и их ролей</label>
+                        <div class="col-sm-8">
+                            <select name="userId" id="user_id" class="form-select">
+                                <option value="#" selected disabled>Выберите пользователя</option>
                                 <c:forEach var="user" items="${users}" varStatus="status">
                                     <option value="${user.id}">
                                         ${user.login} {
@@ -26,9 +27,10 @@
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label for="inputLastname" class="col-sm-3 col-form-label">Фамилия</label>
-                        <div class="col-sm-9">
-                            <select name="selectedRole" class="form-select">
+                        <label for="listRoles" class="col-sm-4 col-form-label text-end">Список ролей</label>
+                        <div class="col-sm-8">
+                            <select name="selectedRole" id="listRoles" class="form-select">
+                                <option value="#" selected disabled>Выберите роль</option>
                                 <c:forEach var="roleName" items="${roles}" varStatus="status">
                                     <option value="${roleName}">${roleName}</option>
                                 </c:forEach>
@@ -37,8 +39,8 @@
                     </div>
                     <div class="mb-3 row">
                         <div class="col-sm-12 d-flex justify-content-end">
-                            <button name="addRole" class="btn btn-primary w-25" type="submit">Добавить роль</button>
-                            <button name="removeRole" class="btn btn-primary w-25" type="submit">Удалить роль</button>
+                            <button name="addRole" class="btn btn-primary m-2" type="submit">Добавить роль</button>
+                            <button name="removeRole" class="btn btn-primary m-2" type="submit">Удалить роль</button>
                         </div>
                     </div>
                 </div>

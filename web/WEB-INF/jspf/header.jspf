@@ -33,10 +33,10 @@
                     Книги
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <c:if test="${manager}">
-                        <li><a class="dropdown-item" href="addBook">Добавить книгу</a></li>
-                      </c:if>
                     <li><a class="dropdown-item" href="listBooks">Список книг</a></li>
+                    <c:if test="${manager}">
+                        <li><a class="dropdown-item" href="addBook">Добавить книгу</a></li>
+                    </c:if>
                     <c:if test="${user}">
                         <li><a class="dropdown-item" href="takeOnBook">Выдать книгу</a></li>
                         <li><a class="dropdown-item" href="returnBook">Вернуть книгу</a></li>

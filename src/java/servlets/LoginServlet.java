@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import session.AuthorFacade;
+import session.BookFacade;
 import session.ReaderFacade;
 import session.UserFacade;
 import tools.PasswordEncrypt;
@@ -30,11 +32,19 @@ import tools.PasswordEncrypt;
     "/showLogin",
     "/login",
     "/logout",
+    "/listBooks",
+    "/addReader",
+    "/createReader",
+    "/listAuthors",
+    
+    
 })
 public class LoginServlet extends HttpServlet {
     
     @EJB private ReaderFacade readerFacade;
     @EJB private UserFacade userFacade;
+    @EJB private BookFacade bookFacade;
+    @EJB private AuthorFacade authorFacade;
     private PasswordEncrypt pe = new PasswordEncrypt();
 
     @Override
@@ -105,8 +115,45 @@ public class LoginServlet extends HttpServlet {
                 if(sessionClose != null){
                     sessionClose.invalidate();
                 }
+                request.setAttribute("authUser", null);
                 request.setAttribute("info", "Вы вышли");
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
+                break;
+            case "/listBooks":
+                request.setAttribute("listBooks", bookFacade.findAll());
+                request.getRequestDispatcher("/WEB-INF/books/listBooks.jsp").forward(request, response);
+                break;  
+            case "/addReader":
+                request.getRequestDispatcher("/WEB-INF/readers/addReader.jsp").forward(request, response);
+                break;
+            case "/createReader":
+                String firstname = request.getParameter("firstname");
+                String lastname = request.getParameter("lastname");
+                String phone = request.getParameter("phone");
+                login = request.getParameter("login");
+                password = request.getParameter("password");
+                Reader reader = new Reader();
+                reader.setPhone(phone);
+                reader.setFirstname(firstname);
+                reader.setLastname(lastname);
+                readerFacade.create(reader);
+                user = new User();
+                user.setLogin(login);
+                PasswordEncrypt pe = new PasswordEncrypt();
+                user.setSalt(pe.getSalt());
+                password = pe.getProtectedPassword(password, user.getSalt());
+                user.setPassword(password);
+                user.setReader(reader);
+                List<String> roles = new ArrayList<>();
+                roles.add(ReaderServlets.Role.USER.toString());
+                user.setRoles(roles);
+                userFacade.create(user);
+                request.setAttribute("info","Читатель успешно добавлен");
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                break;   
+            case "/listAuthors":
+                request.setAttribute("listAuthors", authorFacade.findAll());
+                request.getRequestDispatcher("/WEB-INF/authors/listAuthors.jsp").forward(request, response);
                 break;
         }
     }

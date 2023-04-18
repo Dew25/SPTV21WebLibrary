@@ -72,7 +72,7 @@ public class HistoryServlets extends HttpServlet {
             request.getRequestDispatcher("/showLogin").forward(request, response);
             return;
         }
-        request.setAttribute("authUser", authUser);
+      
         String path = request.getServletPath();
         switch (path) {
             case "/takeOnBook":

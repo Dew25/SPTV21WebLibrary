@@ -56,7 +56,7 @@ public class UploadServlet extends HttpServlet {
             return;
         }
         User authUser = (User) session.getAttribute("user");
-        if(authUser == null){
+        if(authUser == null || authUser.getRoles().contains(ReaderServlets.Role.MANAGER.toString())){
             request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
             return;
