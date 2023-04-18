@@ -30,14 +30,14 @@ import tools.PasswordEncrypt;
  *
  * @author user
  */
-@WebServlet(name = "ReaderServlet", urlPatterns = {
-    "/addReader",
-    "/createReader",
-    "/listReaders",
+@WebServlet(name = "AdminServlet", urlPatterns = {
+    "/admin",
+    "/changeRole",
+    
     
 
 })
-public class ReaderServlets extends HttpServlet {
+public class AdminServlets extends HttpServlet {
     
     @EJB private ReaderFacade readerFacade;
     @EJB private HistoryFacade historyFacade;
@@ -73,33 +73,54 @@ public class ReaderServlets extends HttpServlet {
         request.setAttribute("authUser", authUser);
         String path = request.getServletPath();
         switch (path) {
-            case "/addReader":
-                request.getRequestDispatcher("/WEB-INF/readers/addReader.jsp").forward(request, response);
+            case "/admin":
+                request.setAttribute("users", userFacade.findAll());
+                request.setAttribute("roles", ReaderServlets.Role.values());
+                request.getRequestDispatcher("/WEB-INF/readers/admin.jsp").forward(request, response);
                 break;
-            case "/createReader":
-                String firstname = request.getParameter("firstname");
-                String lastname = request.getParameter("lastname");
-                String phone = request.getParameter("phone");
-                String login = request.getParameter("login");
-                String password = request.getParameter("password");
-                Reader reader = new Reader();
-                reader.setPhone(phone);
-                reader.setFirstname(firstname);
-                reader.setLastname(lastname);
-                readerFacade.create(reader);
-                User user = new User();
-                user.setLogin(login);
-                PasswordEncrypt pe = new PasswordEncrypt();
-                user.setSalt(pe.getSalt());
-                password = pe.getProtectedPassword(password, user.getSalt());
-                user.setPassword(password);
-                user.setReader(reader);
-                List<String> roles = new ArrayList<>();
-                roles.add(Role.USER.toString());
-                user.setRoles(roles);
-                userFacade.create(user);
-                request.setAttribute("info","Читатель успешно добавлен");
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+            case "/changeRole":
+                String addRole = request.getParameter("addRole");
+                String removeRole = request.getParameter("removeRole");
+                String selectedRole = request.getParameter("selectedRole");
+                String userId = request.getParameter("userId");
+                if(selectedRole == null || selectedRole.isEmpty()){
+                    request.setAttribute("info","Не выбрана роль");
+                    request.getRequestDispatcher("/admin").forward(request, response);
+                    break;
+                }
+                if(userId == null || userId.isEmpty()){
+                    request.setAttribute("info","Не выбран пользователь");
+                    request.getRequestDispatcher("/admin").forward(request, response);
+                    break;
+                }
+                User user = userFacade.find(Long.parseLong(userId));
+                if(user.getLogin().equals("Administrator")){
+                    request.setAttribute("info","Этому пользователю изменить роль невозможно");
+                    request.getRequestDispatcher("/admin").forward(request, response);
+                    break;
+                }
+                if((addRole == null || addRole.isEmpty()) && (removeRole != null)){
+                    //удаляем роль у пользователя
+                    for (int i = 0; i < user.getRoles().size(); i++) {
+                        String role = user.getRoles().get(i);
+                        if(role.equals(selectedRole)){
+                            user.getRoles().remove(role);
+                            userFacade.edit(user);
+                        }
+                    }
+                }else if((removeRole == null || removeRole.isEmpty()) && (addRole != null)){
+                    //добавляем роль пользователю
+                    if(!user.getRoles().contains(selectedRole)){
+                        user.getRoles().add(selectedRole);
+                        userFacade.edit(user);
+                    }
+                }else{
+                    request.setAttribute("info","Действие не выполнено");
+                    request.getRequestDispatcher("/admin").forward(request, response);
+                    break;
+                }
+                request.setAttribute("info","Роль успешно изменена");
+                request.getRequestDispatcher("/admin").forward(request, response);
                 break;
             case "/listReaders":
                 Map<Reader, List<Book>> mapReaders = new HashMap();
