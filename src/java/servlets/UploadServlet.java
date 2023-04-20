@@ -56,12 +56,11 @@ public class UploadServlet extends HttpServlet {
             return;
         }
         User authUser = (User) session.getAttribute("user");
-        if(authUser == null || authUser.getRoles().contains(ReaderServlets.Role.MANAGER.toString())){
+        if(authUser == null || !authUser.getRoles().contains(ReaderServlets.Role.MANAGER.toString())){
             request.setAttribute("info", "У вас нет прав, авторизуйтесь!");
             request.getRequestDispatcher("/showLogin").forward(request, response);
             return;
         }
-        request.setAttribute("authUser", authUser);
         String uploadFolder = "C:\\Users\\user\\UploadDir\\SPTV21WebLibrary";
         String path = request.getServletPath();
         switch (path) {
